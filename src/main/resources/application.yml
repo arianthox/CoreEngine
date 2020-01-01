@@ -1,0 +1,53 @@
+server:
+  port: 8001
+  servlet:
+    context-path: /
+spring:
+  application:
+    name: CoreEngine
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+  main:
+    allow-bean-definition-overriding: true
+
+eureka:
+  instance:
+    hostname: eureka1
+    lease-expiration-duration-in-seconds: 10
+    lease-renewal-interval-in-seconds: 10
+  server:
+    eviction-interval-timer-in-ms: 5000
+    enable-self-preservation: true
+    renewal-threshold-update-interval-ms: 120000
+    use-read-only-response-cache: false
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8001/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+info:
+  # static properties
+  app:
+    name: ${spring.application.name}
+    description: --
+
+logging:
+  level:
+    root: info
+    com:
+      netflix:
+        discovery: 'OFF'
+        eureka: 'OFF'
