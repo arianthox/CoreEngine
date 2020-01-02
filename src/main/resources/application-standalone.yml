@@ -1,0 +1,10 @@
+#eureka:
+#  client:
+#    enabled: false
+spring:
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: 0.0.0.0:9300
+      rest:
+        uris: http://172.19.0.2:9200

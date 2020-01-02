@@ -43,11 +43,24 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'javax.persistence:javax.persistence-api:2.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+
+    implementation("com.lightbend.akka:akka-stream-alpakka-json-streaming_2.13:1.1.0")
+
+    implementation("com.typesafe.akka:akka-stream_2.13:2.6.0-M4")
+
+    implementation("com.typesafe.akka:akka-http_2.13:10.1.9")
+    implementation("com.typesafe.akka:akka-http-spray-json_2.13:10.1.9")
+    implementation("com.typesafe.akka:akka-http-jackson_2.13:10.1.9")
+
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.9")
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
@@ -73,4 +86,19 @@ tasks.withType(Pmd){
 pmd {
     ignoreFailures = true
     pmdTest.enabled=false
+}
+
+// make sure bootRun is executed when this task runs
+task runStandalone(dependsOn:bootRun) {
+    // TaskExecutionGraph is populated only after
+    // all the projects in the build have been evaulated https://docs.gradle.org/current/javadoc/org/gradle/api/execution/TaskExecutionGraph.html#whenReady-groovy.lang.Closure-
+    gradle.taskGraph.whenReady { graph ->
+        logger.lifecycle('>>> Setting spring.profiles.active to Standalone')
+        if (graph.hasTask(runStandalone)) {
+            // configure task before it is executed
+            bootRun {
+                args = ["--spring.profiles.active=standalone"]
+            }
+        }
+    }
 }

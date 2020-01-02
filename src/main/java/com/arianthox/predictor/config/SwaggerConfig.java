@@ -1,4 +1,4 @@
-package com.globant.brainwaves.config;
+package com.arianthox.predictor.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.globant.brainwaves.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.arianthox.predictor.controller"))
                 .paths(PathSelectors.ant("/api/**"))
                 .build()
                 .apiInfo(apiInfo());
@@ -30,10 +30,10 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "CoreEngine Api",
-                "BrainWaves core api ",
+                "core api ",
                 "API BETA",
                 "Terms of service",
-                new Contact("Gustavo Peiretti", "globant.com/brainwaves", "gustavo.peiretti@globant.com"),
+                new Contact("Ricardo Sanchez", "arianthox", "arianthox@gmail.com"),
                 "License of API", "API license URL", Collections.emptyList());
     }
 

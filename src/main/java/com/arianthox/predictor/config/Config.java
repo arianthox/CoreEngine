@@ -1,10 +1,10 @@
-package com.globant.brainwaves.config;
+package com.arianthox.predictor.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories("com.globant.brainwaves.repository")
+@EnableElasticsearchRepositories("com.arianthox.predictor.repository")
 public class Config {
 
 }

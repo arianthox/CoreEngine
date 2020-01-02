@@ -1,4 +1,4 @@
-package com.globant.brainwaves.config;
+package com.arianthox.predictor.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
