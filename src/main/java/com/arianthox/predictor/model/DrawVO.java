@@ -9,8 +9,9 @@ import javax.persistence.Column;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.TemporalField;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Builder
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Document(indexName = "draws", type = "allDraws")
-public class DrawDataVO implements Serializable {
+//@Document(indexName = "draws", type = "allDraws")
+public class DrawVO implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -34,7 +35,7 @@ public class DrawDataVO implements Serializable {
     private String multiplier;
 
 
-    public DrawDataVO(Date drawDate, String winningNumbers, String multiplier) {
+    public DrawVO(Date drawDate, String winningNumbers, String multiplier) {
         this.drawDate = drawDate;
         this.n = Arrays.asList(winningNumbers.split(" ")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
         this.multiplier = multiplier;

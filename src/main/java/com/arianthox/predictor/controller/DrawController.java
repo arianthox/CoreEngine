@@ -1,5 +1,6 @@
 package com.arianthox.predictor.controller;
 
+import com.arianthox.predictor.model.DrawAccumulatedPerYearVO;
 import com.arianthox.predictor.service.DataService;
 import com.arianthox.predictor.model.DrawDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,15 @@ public class DrawController {
         return dataService.getAllDraws();
 
     }
+
+    @GetMapping("/process")
+    @ResponseBody
+    public DrawAccumulatedPerYearVO process() {
+        return dataService.processDraws();
+
+    }
+
+
 
 
 }

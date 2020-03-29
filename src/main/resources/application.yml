@@ -16,6 +16,14 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+security:
+  basic:
+    enabled: false
+
+
+draw:
+  url: http://data.ny.gov/resource/d6yy-54nr.json
+
 eureka:
   instance:
     hostname: eureka1
@@ -32,11 +40,30 @@ eureka:
     service-url:
       defaultZone: http://localhost:8001/eureka
 
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+        loggerLevel: basic
+
 management:
+  security:
+    enabled: false
+  endpoint:
+    info:
+      enabled: true
   endpoints:
     web:
+      cors:
+        allowed-origins: "*"
+        allowed-methods: GET, POST
       exposure:
         include: "*"
+    enabled-by-default: true
+  auditevents:
+    enabled:
 
 info:
   # static properties

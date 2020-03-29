@@ -20,6 +20,7 @@ import com.arianthox.predictor.model.DrawDataVO;
 import com.arianthox.predictor.repository.DrawRepository;
 import com.arianthox.predictor.service.DataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +31,11 @@ import java.util.concurrent.CompletionStage;
 @Component
 public class DrawConnectorAdapter {
 
-    private HttpRequest httpRequest = HttpRequest.create().withUri(
-            "http://data.ny.gov/resource/d6yy-54nr.json")
-            .withHeaders(Collections.singleton(Accept.create(MediaRanges.ALL_TEXT)));
+    @Value("${draw.url}")
+    private String url;
+
+    @Autowired
+    private DrawRepository drawRepository;
 
     private ActorSystem system = ActorSystem.create();
     private Materializer materializer = ActorMaterializer.create(system);
@@ -40,18 +43,19 @@ public class DrawConnectorAdapter {
     private EntityStreamingSupport support = EntityStreamingSupport.json();
     private Unmarshaller unmarshal = Jackson.byteStringUnmarshaller(DrawDataDTO.class);
 
-    @Autowired
-    private DrawRepository drawRepository;
 
 
     @Transactional
     public void upload() {
 
         System.out.println("Uploading...");
+        HttpRequest httpRequest = HttpRequest.create().withUri(
+                url)
+                .withHeaders(Collections.singleton(Accept.create(MediaRanges.ALL_TEXT)));
         Source<DrawDataDTO, NotUsed> source = Source.single(httpRequest).mapAsync(1, param -> http.singleRequest(param))
                 .flatMapConcat(param -> this.extractEntityData(param))
                 .via(support.getFramingDecoder())
-                .mapAsync(10, it ->
+                .mapAsync(1, it ->
                         (CompletionStage<DrawDataDTO>) unmarshal.unmarshal(it, materializer)
                 );
 
