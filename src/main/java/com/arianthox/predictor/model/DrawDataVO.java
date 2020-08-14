@@ -3,15 +3,18 @@ package com.arianthox.predictor.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
+
 
 import javax.persistence.Column;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.TemporalField;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Builder
 @Getter
@@ -19,7 +22,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Document(indexName = "draws", type = "allDraws")
 public class DrawDataVO implements Serializable {
 
     @Id
@@ -31,12 +33,15 @@ public class DrawDataVO implements Serializable {
     private Integer month;
     private Integer day;
     private List<Integer> n;
+    private Integer factor;
     private String multiplier;
+    private int score=0;
 
 
     public DrawDataVO(Date drawDate, String winningNumbers, String multiplier) {
         this.drawDate = drawDate;
         this.n = Arrays.asList(winningNumbers.split(" ")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+        this.factor=this.n.remove(this.n.size()-1);
         this.multiplier = multiplier;
         this.id = this.drawDate.getTime();
         LocalDate localDate = LocalDate.ofInstant(this.drawDate.toInstant(), ZoneId.systemDefault());
@@ -47,7 +52,18 @@ public class DrawDataVO implements Serializable {
     }
 
     public String toString() {
-        return String.format("%s-%s-%s", this.year,this.month,this.day);
+        return String.format("[%s] [%s] [%s] [%s]",this.drawDate, n.stream().map(Object::toString)
+                .collect(Collectors.joining("-")),this.factor,this.getScore());
     }
+
+    public int getScore(){
+        if(score==0) {
+            Collections.sort(n);
+            score= IntStream.range(0, n.size() - 1).map(i -> n.get(i + 1) - n.get(i)).sum();
+        }
+        return score;
+    }
+
+
 
 }

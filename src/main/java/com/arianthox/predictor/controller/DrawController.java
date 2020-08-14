@@ -1,49 +1,27 @@
 package com.arianthox.predictor.controller;
 
-import com.arianthox.predictor.model.DrawAccumulatedPerYearVO;
-import com.arianthox.predictor.service.DataService;
-import com.arianthox.predictor.model.DrawDataVO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.arianthox.predictor.service.ProcessService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/draw")
+@RequestMapping(value = "/api")
 public class DrawController {
 
-    @Autowired
-    private transient DataService dataService;
+    private final transient ProcessService processService;
 
-
-    @GetMapping("/upload")
-    @ResponseBody
-    public HttpStatus upload() {
-        dataService.uploadDraws();
-        return HttpStatus.OK;
-    }
-
-    @GetMapping("/purge")
-    @ResponseBody
-    public HttpStatus purge() {
-        dataService.purgeDraws();
-        return HttpStatus.OK;
-    }
-
-    @GetMapping("/all")
-    @ResponseBody
-    public Iterable<DrawDataVO> all() {
-        return dataService.getAllDraws();
-
+    public DrawController(ProcessService processService) {
+        this.processService = processService;
     }
 
     @GetMapping("/process")
     @ResponseBody
-    public DrawAccumulatedPerYearVO process() {
-        return dataService.processDraws();
-
+    public HttpStatus process() {
+        processService.process();
+        return HttpStatus.OK;
     }
-
-
-
 
 }

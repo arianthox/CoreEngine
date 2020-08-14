@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/")
 public class Home {
 
-    public String home() {
-        return "Core-Engine";
-    }
+
 
 }

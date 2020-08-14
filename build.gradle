@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.1.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'org.springframework.boot' version '2.2.7.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
     id 'pmd'
 }
@@ -8,7 +8,7 @@ plugins {
 def defaultEncoding = 'UTF-8'
 [compileJava, compileTestJava]*.options*.encoding = defaultEncoding
 
-group = 'com.globant/BrainWaves/CoreEngine'
+group = 'com.arianthox/Predictor/CoreEngine'
 version = '0.0.1-SNAPSHOT'
 
 repositories {
@@ -18,10 +18,14 @@ repositories {
 
 ext {
     set('springCloudVersion', "Hoxton.RC2")
+    set('AkkaVersion', "2.6.6")
+    set('AlpakkaKafkaVersion', "2.0.2")
+    set('AlpakkaJSONVersion',"2.0.1")
+    set('AlpakkaHTTPVersion',"10.2.0")
 }
 
-sourceCompatibility = JavaVersion.VERSION_13
-targetCompatibility = JavaVersion.VERSION_13
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 configurations {
     developmentOnly
@@ -43,22 +47,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'javax.persistence:javax.persistence-api:2.2'
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-ribbon'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
-    implementation("com.lightbend.akka:akka-stream-alpakka-json-streaming_2.13:1.1.0")
+    implementation "com.typesafe.akka:akka-stream-kafka_2.13:${AlpakkaKafkaVersion}"
+    implementation "com.typesafe.akka:akka-stream_2.13:${AkkaVersion}"
+    implementation "com.typesafe.akka:akka-actor-typed_2.13:${AkkaVersion}"
+    implementation "com.typesafe.akka:akka-actor_2.13:${AkkaVersion}"
 
-    implementation("com.typesafe.akka:akka-stream_2.13:2.6.0-M4")
+    implementation project(":commons")
 
-    implementation("com.typesafe.akka:akka-http_2.13:10.1.9")
-    implementation("com.typesafe.akka:akka-http-spray-json_2.13:10.1.9")
-    implementation("com.typesafe.akka:akka-http-jackson_2.13:10.1.9")
+    implementation("com.lightbend.akka:akka-stream-alpakka-json-streaming_2.13:${AlpakkaJSONVersion}")
+    implementation("com.typesafe.akka:akka-http_2.13:${AlpakkaHTTPVersion}")
+    implementation("com.typesafe.akka:akka-http-spray-json_2.13:${AlpakkaHTTPVersion}")
+    implementation("com.typesafe.akka:akka-http-jackson_2.13:${AlpakkaHTTPVersion}")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.9")
@@ -69,7 +78,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testCompile 'org.testcontainers:elasticsearch:1.11.1'
+
 }
 
 sourceSets {

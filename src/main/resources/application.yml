@@ -5,32 +5,38 @@ server:
 spring:
   application:
     name: CoreEngine
-  data:
-    elasticsearch:
-      repositories:
-        enabled: true
   jpa:
     generate-ddl: true
     hibernate:
       ddl-auto: update
   main:
     allow-bean-definition-overriding: true
+  kafka:
+    bootstrap-servers: broker:9092
+    consumer:
+      group-id: core
+    template:
+      default-topic: draws
 
-security:
-  basic:
-    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
+BWMatcher:
+  ribbon:
+    listOfServers: 127.0.0.1:8002
 
 draw:
   url: http://data.ny.gov/resource/d6yy-54nr.json
 
 eureka:
   instance:
-    hostname: eureka1
-    lease-expiration-duration-in-seconds: 10
-    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 240
+    lease-renewal-interval-in-seconds: 120
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
   server:
-    eviction-interval-timer-in-ms: 5000
+    eviction-interval-timer-in-ms: 50000
     enable-self-preservation: true
     renewal-threshold-update-interval-ms: 120000
     use-read-only-response-cache: false
@@ -39,6 +45,7 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8001/eureka
+
 
 feign:
   client:
@@ -49,8 +56,6 @@ feign:
         loggerLevel: basic
 
 management:
-  security:
-    enabled: false
   endpoint:
     info:
       enabled: true
@@ -64,7 +69,9 @@ management:
     enabled-by-default: true
   auditevents:
     enabled:
-
+  health:
+    elasticsearch:
+      enabled: false
 info:
   # static properties
   app:

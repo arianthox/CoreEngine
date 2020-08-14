@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableEurekaClient
 @EnableFeignClients
 @EnableEurekaServer
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.arianthox.predictor.commons","com.arianthox.predictor"})
 public class CoreEngineApplication {
     public static void main(String[] args) {
         SpringApplication.run(CoreEngineApplication.class, args);

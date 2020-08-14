@@ -6,36 +6,33 @@ import akka.actor.ActorSystem;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.common.EntityStreamingSupport;
 import akka.http.javadsl.marshallers.jackson.Jackson;
-import akka.http.javadsl.model.*;
+import akka.http.javadsl.model.HttpRequest;
+import akka.http.javadsl.model.HttpResponse;
+import akka.http.javadsl.model.MediaRanges;
+import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.headers.Accept;
 import akka.http.javadsl.unmarshalling.Unmarshaller;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
+import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
-//import com.brainbreaker.core.engine.entity.JSDrawData;
-//import com.brainbreaker.core.engine.repository.DrawRepository
 import com.arianthox.predictor.model.DrawDataDTO;
-import com.arianthox.predictor.model.DrawDataVO;
-import com.arianthox.predictor.repository.DrawRepository;
-import com.arianthox.predictor.service.DataService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-
 @Component
+@Log
 public class DrawConnectorAdapter {
 
     @Value("${draw.url}")
     private String url;
-
-    @Autowired
-    private DrawRepository drawRepository;
 
     private ActorSystem system = ActorSystem.create();
     private Materializer materializer = ActorMaterializer.create(system);
@@ -44,11 +41,10 @@ public class DrawConnectorAdapter {
     private Unmarshaller unmarshal = Jackson.byteStringUnmarshaller(DrawDataDTO.class);
 
 
-
     @Transactional
-    public void upload() {
+    public CompletionStage<List<DrawDataDTO>> pull() {
 
-        System.out.println("Uploading...");
+        log.info("Pulling information from:" +url);
         HttpRequest httpRequest = HttpRequest.create().withUri(
                 url)
                 .withHeaders(Collections.singleton(Accept.create(MediaRanges.ALL_TEXT)));
@@ -59,21 +55,10 @@ public class DrawConnectorAdapter {
                         (CompletionStage<DrawDataDTO>) unmarshal.unmarshal(it, materializer)
                 );
 
-        CompletionStage completion=source.runForeach(param -> {
-            DrawDataVO drawDataVO = param.toDrawData();
-            System.out.println(drawDataVO);
-            drawRepository.save(drawDataVO);
-        },materializer);
-
-        completion.thenAccept(o -> {
-            System.out.println("Terminating ActorSystem");
-            //system.terminate();
-        });
-
+        return source.runWith(Sink.seq(), materializer);
     }
 
     private Source<ByteString, ?> extractEntityData(HttpResponse httpResponse) {
-        System.out.println("Extract Data...");
         return (httpResponse.status() == StatusCodes.OK) ? httpResponse.entity().getDataBytes() : null;
     }
 
