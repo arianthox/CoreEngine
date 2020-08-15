@@ -3,7 +3,7 @@ package com.arianthox.predictor.service;
 import com.arianthox.predictor.adapter.DrawConnectorAdapter;
 import com.arianthox.predictor.client.BWMatcherClient;
 import com.arianthox.predictor.commons.adapter.KafkaProducer;
-import com.arianthox.predictor.model.DrawVO;
+import com.arianthox.predictor.commons.model.DrawVO;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

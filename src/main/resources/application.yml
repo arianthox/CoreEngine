@@ -17,10 +17,9 @@ spring:
       group-id: core
     template:
       default-topic: draws
-
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  health:
+    elasticsearch:
+      enabled: false
 
 BWMatcher:
   ribbon:

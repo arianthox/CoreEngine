@@ -1,6 +1,6 @@
 package com.arianthox.predictor.util;
 
-import com.arianthox.predictor.model.DrawVO;
+import com.arianthox.predictor.commons.model.DrawVO;
 import lombok.extern.java.Log;
 
 import java.util.Arrays;
