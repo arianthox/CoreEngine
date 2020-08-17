@@ -97,7 +97,8 @@ public class ProcessService {
                     (draw) -> {
 
                         kafkaProducer.send("draws", draw, done -> {
-                            log.info("Result:" + draw.toString() );
+                            //log.info("Result:" + draw.toString() );
+                            counter.incrementAndGet();
                         });
 //
 //                        int[] values = draw.getN().stream().mapToInt(Integer::intValue).toArray();

@@ -100,12 +100,12 @@ services:
       - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://core-engine:8001/eureka"
 
 
-  bw-matcher:
+  matcher:
     depends_on:
       - core-engine
-    container_name: bw-matcher
-    image: bw-matcher
-    build: ./../BWMatcher/.
+    container_name: matcher
+    image: matcher
+    build: ./../Matcher/.
     ports:
       - "8002:8002"
     expose:
