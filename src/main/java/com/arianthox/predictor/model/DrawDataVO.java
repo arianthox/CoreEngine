@@ -29,31 +29,28 @@ public class DrawDataVO implements Serializable {
     private Long id;
 
     private Date drawDate;
-    private Integer year;
-    private Integer month;
-    private Integer day;
+
     private List<Integer> n;
-    private Integer factor;
-    private String multiplier;
+
+    private Integer multiplier;
+    private Integer megaball;
+
     private int score=0;
 
 
-    public DrawDataVO(Date drawDate, String winningNumbers, String multiplier) {
+    public DrawDataVO(Date drawDate, String winningNumbers, Integer multiplier, Integer megaball) {
         this.drawDate = drawDate;
         this.n = Arrays.asList(winningNumbers.split(" ")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
-        this.factor=this.n.remove(this.n.size()-1);
         this.multiplier = multiplier;
+        this.megaball = megaball;
+
         this.id = this.drawDate.getTime();
-        LocalDate localDate = LocalDate.ofInstant(this.drawDate.toInstant(), ZoneId.systemDefault());
-        this.year = localDate.getYear();
-        this.month = localDate.getMonthValue();
-        this.day = localDate.getDayOfMonth();
 
     }
 
     public String toString() {
-        return String.format("[%s] [%s] [%s] [%s]",this.drawDate, n.stream().map(Object::toString)
-                .collect(Collectors.joining("-")),this.factor,this.getScore());
+        return String.format("[%s] [%s] [%s] [%s] [%s]",this.drawDate, n.stream().map(Object::toString)
+                .collect(Collectors.joining("-")),this.megaball,this.multiplier,this.getScore());
     }
 
     public int getScore(){

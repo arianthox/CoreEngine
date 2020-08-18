@@ -21,12 +21,16 @@ spring:
     elasticsearch:
       enabled: false
 
+
 BWMatcher:
   ribbon:
     listOfServers: 127.0.0.1:8002
 
 draw:
+  #Powerball
   url: http://data.ny.gov/resource/d6yy-54nr.json
+  #Megamillion
+#  url: https://data.ny.gov/resource/5xaw-6ayf.json
 
 eureka:
   instance:
@@ -84,3 +88,4 @@ logging:
       netflix:
         discovery: 'OFF'
         eureka: 'OFF'
+

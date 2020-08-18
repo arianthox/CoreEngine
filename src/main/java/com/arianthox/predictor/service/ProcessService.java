@@ -4,7 +4,10 @@ import com.arianthox.predictor.adapter.DrawConnectorAdapter;
 import com.arianthox.predictor.client.BWMatcherClient;
 import com.arianthox.predictor.commons.adapter.KafkaProducer;
 import com.arianthox.predictor.commons.model.DrawVO;
+import com.arianthox.predictor.util.DrawGenerator;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.arianthox.predictor.util.DrawGenerator.permutations;
 
 @Service
 @Log
@@ -26,23 +28,35 @@ public class ProcessService {
 
     private final KafkaProducer kafkaProducer;
 
+    private final DrawGenerator drawGenerator;
 
-    public ProcessService(DrawConnectorAdapter drawConnectorAdapter, BWMatcherClient bwMatcherClient, KafkaProducer kafkaProducer) {
+    @Value("${draw.start}")
+    private Integer start;
+
+    @Value("${draw.end}")
+    private Integer end;
+
+    @Value("${draw.factor}")
+    private Integer factor;
+
+
+    public ProcessService(DrawConnectorAdapter drawConnectorAdapter, BWMatcherClient bwMatcherClient, KafkaProducer kafkaProducer, DrawGenerator drawGenerator) {
         this.drawConnectorAdapter = drawConnectorAdapter;
         this.bwMatcherClient = bwMatcherClient;
         this.kafkaProducer = kafkaProducer;
+        this.drawGenerator = drawGenerator;
     }
 
     //@PostConstruct
     public void process() {
 
         CompletionStage<List<DrawVO>> listCompletionStage = drawConnectorAdapter.pull()
-                .thenApply(drawDataDTOS -> drawDataDTOS.stream().limit(104)
+                .thenApply(drawDataDTOS -> drawDataDTOS.stream()
                         .peek(drawDataDTO -> {
                             log.info("Processing:" + drawDataDTO.toDrawData().toString());
                         })
                         .map(drawDataDTO -> drawDataDTO.toDrawData())
-                        .map(drawDataVO -> DrawVO.builder().year(drawDataVO.getYear()).month(drawDataVO.getMonth()).day(drawDataVO.getDay()).drawDate(drawDataVO.getDrawDate()).n(drawDataVO.getN()).multiplier(drawDataVO.getMultiplier()).build())
+                        .map(drawDataVO -> DrawVO.builder().drawDate(drawDataVO.getDrawDate()).megaBall(drawDataVO.getMegaball()).n(drawDataVO.getN()).multiplier(drawDataVO.getMultiplier()).build())
                         .collect(Collectors.toList())
                 );
 
@@ -57,7 +71,7 @@ public class ProcessService {
 
                 log.info("Target[" + train + "]: " + target.toString());
 
-                List<int[]> collect = IntStream.rangeClosed(train + 1, train + 50).boxed().map(index -> drawVOS.get(index)).map(drawVO -> {
+                List<int[]> collect = IntStream.rangeClosed(train + 1, train + 104).boxed().map(index -> drawVOS.get(index)).map(drawVO -> {
                     log.info("Parsing Samples: " + drawVO.toString());
                     List<Integer> n = new ArrayList<>(drawVO.getN());
                     n.add(drawVO.getFactor());
@@ -90,9 +104,8 @@ public class ProcessService {
             AtomicInteger excluded = new AtomicInteger(0);
 
             log.info("Starting Process");
-            permutations(1,
-                    69,
-                    26,
+            drawGenerator.permutations(start, end,
+                    factor,
                     stats.getMin(), stats.getMax(),
                     (draw) -> {
 

@@ -1,0 +1,7 @@
+draw:
+  #Megamillion
+  url: https://data.ny.gov/resource/5xaw-6ayf.json
+  start: 1
+  end: 69
+  factor: 26
+

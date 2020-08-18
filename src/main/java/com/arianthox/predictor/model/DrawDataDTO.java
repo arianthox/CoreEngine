@@ -17,18 +17,20 @@ import java.util.Date;
 public class DrawDataDTO implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-//@JsonDeserialize(using = DateHandler::class)
     @JsonProperty("draw_date")
     private Date drawDate;
 
     @JsonProperty("winning_numbers")
     private String winningNumbers;
 
+    @JsonProperty("mega_ball")
+    private Integer megaBall;
+
     @JsonProperty("multiplier")
-    private String multiplier;
+    private Integer multiplier;
 
     public DrawDataVO toDrawData() {
-        return new DrawDataVO(drawDate, winningNumbers, multiplier);
+        return new DrawDataVO(drawDate, winningNumbers, multiplier,megaBall);
     }
 
     public String toString() {
